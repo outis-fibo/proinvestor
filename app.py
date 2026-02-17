@@ -2,11 +2,10 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
 
-# -----------------------------
-# CUSTOM DARK THEME (PRO MODE)
-# -----------------------------
+# -------------------------------------------------
+# CUSTOM DARK THEME + ULTRA MODERN PRO SIDEBAR
+# -------------------------------------------------
 custom_css = """
 <style>
 
@@ -22,52 +21,6 @@ h1, h2, h3, h4 {
     color: #f2f2f2 !important;
     font-weight: 600;
 }
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #111317 !important;
-    border-right: 1px solid #1f2228;
-}
-
-/* Input alanları */
-input, select, textarea {
-    background-color: #1a1d23 !important;
-    color: #e6e6e6 !important;
-    border: 1px solid #2a2d33 !important;
-    border-radius: 6px !important;
-}
-
-/* Metric kartları */
-[data-testid="stMetricValue"] {
-    color: #00eaff !important;
-    font-size: 26px !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stMetricDelta"] {
-    font-size: 16px !important;
-}
-
-/* Plotly grafikleri */
-.js-plotly-plot .plotly .main-svg {
-    background-color: #0d0f12 !important;
-}
-
-/* Bölücü çizgiler */
-hr {
-    border: 1px solid #1f2228 !important;
-}
-
-/* Kart görünümü */
-.block-container {
-    padding-top: 2rem;
-}
-
-</style>
-"""
-
-import streamlit as st
-st.markdown(custom_css, unsafe_allow_html=True)
 
 /* --- ULTRA MODERN PRO SIDEBAR (GLASS + NEON) --- */
 section[data-testid="stSidebar"] {
@@ -119,33 +72,40 @@ section[data-testid="stSidebar"] button:hover {
     box-shadow: 0 0 12px #00eaff !important;
 }
 
-# -----------------------------
-# SIDEBAR – KULLANICI GİRİŞİ
-# -----------------------------
-with st.sidebar:
-    st.markdown("<h2 style='color:#00eaff; text-align:center;'>⚙️ Settings</h2>", unsafe_allow_html=True)
+/* Metric kartları */
+[data-testid="stMetricValue"] {
+    color: #00eaff !important;
+    font-size: 26px !important;
+    font-weight: 700 !important;
+}
 
-    market_type = st.selectbox(
-        "Market",
-        [
-            "ABD (Global)",
-            "Türkiye (BIST)",
-            "İngiltere (LSE)",
-            "Avrupa (EUROPE)"
-        ]
-    )
+[data-testid="stMetricDelta"] {
+    font-size: 16px !important;
+}
 
-    symbol = st.text_input(
-        "Symbol",
-        value="AAPL",
-        placeholder="Örn: AAPL, TSLA, MSFT, THYAO, BMW, AIR, SAN"
-    )
+/* Plotly grafikleri */
+.js-plotly-plot .plotly .main-svg {
+    background-color: #0d0f12 !important;
+}
 
+/* Bölücü çizgiler */
+hr {
+    border: 1px solid #1f2228 !important;
+}
 
+/* Kart görünümü */
+.block-container {
+    padding-top: 2rem;
+}
 
-# -----------------------------
+</style>
+"""
+
+st.markdown(custom_css, unsafe_allow_html=True)
+
+# -------------------------------------------------
 # SAYFA AYARLARI
-# -----------------------------
+# -------------------------------------------------
 st.set_page_config(
     page_title="ProInvestor Lite",
     layout="wide"
@@ -154,10 +114,9 @@ st.set_page_config(
 st.markdown("<h1 style='text-align:center; color:#00eaff;'>PROINVESTOR</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center; color:#9aa0a6;'>Next‑Gen Stock Analysis Terminal</p>", unsafe_allow_html=True)
 
-
-# -----------------------------
-# YARDIMCI FONKSİYONLAR
-# -----------------------------
+# -------------------------------------------------
+# TICKER FORMAT FONKSİYONU
+# -------------------------------------------------
 def build_ticker_symbol(symbol: str, market_type: str) -> str:
     symbol = symbol.upper().strip()
 
@@ -168,15 +127,15 @@ def build_ticker_symbol(symbol: str, market_type: str) -> str:
         return symbol + ".L"
 
     elif market_type == "Avrupa (EUROPE)":
-        # Eğer kullanıcı zaten suffix girdiyse dokunma
         if "." in symbol:
             return symbol
-        # Varsayılan: XETRA (Almanya)
-        return symbol + ".DE"
+        return symbol + ".DE"  # Varsayılan: XETRA
 
     return symbol  # ABD
 
-
+# -------------------------------------------------
+# VERİ ÇEKME
+# -------------------------------------------------
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_stock_data(ticker_symbol: str):
     ticker = yf.Ticker(ticker_symbol)
@@ -184,6 +143,9 @@ def fetch_stock_data(ticker_symbol: str):
     info = ticker.info
     return hist, info
 
+# -------------------------------------------------
+# GRAFİK
+# -------------------------------------------------
 def plot_price_chart(hist: pd.DataFrame, symbol: str):
     fig = go.Figure()
     fig.add_trace(go.Candlestick(
@@ -203,48 +165,12 @@ def plot_price_chart(hist: pd.DataFrame, symbol: str):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# -------------------------------------------------
+# METRİKLER
+# -------------------------------------------------
 def show_basic_metrics(info: dict):
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Son Fiyat", f"{info.get('regularMarketPrice', 'N/A')}")
     with col2:
         st.metric("Günlük Değişim", f"{info.get('regularMarketChange', 'N/A')}")
-    with col3:
-        st.metric("Günlük Değişim (%)", f"{info.get('regularMarketChangePercent', 'N/A')}")
-
-# -----------------------------
-# ANA İÇERİK
-# -----------------------------
-if not symbol:
-    st.info("Başlamak için sol taraftan bir sembol gir.")
-else:
-    ticker_symbol = build_ticker_symbol(symbol, market_type)
-
-    try:
-        with st.spinner(f"{ticker_symbol} verileri çekiliyor..."):
-            hist, info = fetch_stock_data(ticker_symbol)
-
-        if hist.empty:
-            st.error(f"{ticker_symbol} için veri bulunamadı.")
-        else:
-            # Üst bilgi
-            st.subheader(f"{symbol} ({ticker_symbol})")
-
-            # Temel metrikler
-            show_basic_metrics(info)
-
-            st.markdown("---")
-
-            # Grafik
-            plot_price_chart(hist, symbol)
-
-            # Ek bilgi
-            st.markdown("### Şirket Özeti")
-            st.write(info.get("longName", "İsim bilgisi yok"))
-            st.write(info.get("longBusinessSummary", "Özet bilgi bulunamadı."))
-
-    except Exception as e:
-        st.error("Veri çekilirken bir hata oluştu.")
-        st.caption(str(e))
-
-
