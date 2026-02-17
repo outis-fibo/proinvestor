@@ -174,3 +174,11 @@ def show_basic_metrics(info: dict):
         st.metric("Son Fiyat", f"{info.get('regularMarketPrice', 'N/A')}")
     with col2:
         st.metric("Günlük Değişim", f"{info.get('regularMarketChange', 'N/A')}")
+    with col3:
+        st.metric("Günlük Değişim (%)", f"{info.get('regularMarketChangePercent', 'N/A')}")
+
+# -------------------------------------------------
+# SIDEBAR
+# -------------------------------------------------
+with st.sidebar:
+    st.markdown("<h2 style='color:#00eaff; text-align:center;'>⚙️ Settings</h2>
