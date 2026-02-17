@@ -69,6 +69,79 @@ hr {
 import streamlit as st
 st.markdown(custom_css, unsafe_allow_html=True)
 
+/* --- ULTRA MODERN PRO SIDEBAR (GLASS + NEON) --- */
+section[data-testid="stSidebar"] {
+    background: rgba(15, 18, 24, 0.55) !important;
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border-right: 1px solid rgba(0, 238, 255, 0.18);
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    padding: 25px !important;
+}
+
+section[data-testid="stSidebar"] h2 {
+    color: #00eaff !important;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Input alanları */
+section[data-testid="stSidebar"] input,
+section[data-testid="stSidebar"] select {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(0, 238, 255, 0.25) !important;
+    border-radius: 8px !important;
+    color: #e6e6e6 !important;
+}
+
+section[data-testid="stSidebar"] input:hover,
+section[data-testid="stSidebar"] select:hover {
+    border-color: #00eaff !important;
+}
+
+/* Butonlar */
+section[data-testid="stSidebar"] button {
+    background: linear-gradient(135deg, #00eaff 0%, #007bff 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: black !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    transition: 0.2s ease-in-out !important;
+}
+
+section[data-testid="stSidebar"] button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 12px #00eaff !important;
+}
+
+# -----------------------------
+# SIDEBAR – KULLANICI GİRİŞİ
+# -----------------------------
+with st.sidebar:
+    st.markdown("<h2 style='color:#00eaff; text-align:center;'>⚙️ Settings</h2>", unsafe_allow_html=True)
+
+    market_type = st.selectbox(
+        "Market",
+        [
+            "ABD (Global)",
+            "Türkiye (BIST)",
+            "İngiltere (LSE)",
+            "Avrupa (EUROPE)"
+        ]
+    )
+
+    symbol = st.text_input(
+        "Symbol",
+        value="AAPL",
+        placeholder="Örn: AAPL, TSLA, MSFT, THYAO, BMW, AIR, SAN"
+    )
+
+
 
 # -----------------------------
 # SAYFA AYARLARI
@@ -139,25 +212,6 @@ def show_basic_metrics(info: dict):
     with col3:
         st.metric("Günlük Değişim (%)", f"{info.get('regularMarketChangePercent', 'N/A')}")
 
-with st.sidebar:
-    st.markdown("<h2 style='color:#00eaff; text-align:center;'>⚙️ Settings</h2>", unsafe_allow_html=True)
-
-    market_type = st.selectbox(
-        "Market",
-        [
-            "ABD (Global)",
-            "Türkiye (BIST)",
-            "İngiltere (LSE)",
-            "Avrupa (EUROPE)"
-        ]
-    )
-
-    symbol = st.text_input(
-        "Symbol",
-        value="AAPL",
-        placeholder="Örn: AAPL, TSLA, MSFT, THYAO, BMW, AIR, SAN"
-    )
-
 # -----------------------------
 # ANA İÇERİK
 # -----------------------------
@@ -192,4 +246,5 @@ else:
     except Exception as e:
         st.error("Veri çekilirken bir hata oluştu.")
         st.caption(str(e))
+
 
