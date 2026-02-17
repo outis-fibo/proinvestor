@@ -87,11 +87,22 @@ st.markdown("<p style='text-align:center; color:#9aa0a6;'>Next‑Gen Stock Analy
 # -----------------------------
 def build_ticker_symbol(symbol: str, market_type: str) -> str:
     symbol = symbol.upper().strip()
+
     if market_type == "Türkiye (BIST)":
         return symbol + ".IS"
+
     elif market_type == "İngiltere (LSE)":
         return symbol + ".L"
+
+    elif market_type == "Avrupa (EUROPE)":
+        # Eğer kullanıcı zaten suffix girdiyse dokunma
+        if "." in symbol:
+            return symbol
+        # Varsayılan: XETRA (Almanya)
+        return symbol + ".DE"
+
     return symbol  # ABD
+
 
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_stock_data(ticker_symbol: str):
@@ -128,25 +139,24 @@ def show_basic_metrics(info: dict):
     with col3:
         st.metric("Günlük Değişim (%)", f"{info.get('regularMarketChangePercent', 'N/A')}")
 
-# -----------------------------
-# SIDEBAR – KULLANICI GİRİŞİ
-# -----------------------------
 with st.sidebar:
-    st.header("⚙️ Ayarlar")
+    st.markdown("<h2 style='color:#00eaff; text-align:center;'>⚙️ Settings</h2>", unsafe_allow_html=True)
 
     market_type = st.selectbox(
-        "Borsa Bölgesi",
-        ["ABD (Global)", "Türkiye (BIST)", "İngiltere (LSE)"]
+        "Market",
+        [
+            "ABD (Global)",
+            "Türkiye (BIST)",
+            "İngiltere (LSE)",
+            "Avrupa (EUROPE)"
+        ]
     )
 
     symbol = st.text_input(
-        "Sembol",
+        "Symbol",
         value="AAPL",
-        placeholder="Örn: AAPL, TSLA, MSFT, THYAO"
+        placeholder="Örn: AAPL, TSLA, MSFT, THYAO, BMW, AIR, SAN"
     )
-
-    st.markdown("---")
-    st.caption("Sembolü yazıp Enter'a basın.")
 
 # -----------------------------
 # ANA İÇERİK
@@ -182,3 +192,4 @@ else:
     except Exception as e:
         st.error("Veri çekilirken bir hata oluştu.")
         st.caption(str(e))
+
