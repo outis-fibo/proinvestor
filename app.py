@@ -5,6 +5,72 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
 # -----------------------------
+# CUSTOM DARK THEME (PRO MODE)
+# -----------------------------
+custom_css = """
+<style>
+
+/* Genel arka plan */
+body, .stApp {
+    background-color: #0d0f12 !important;
+    color: #e6e6e6 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Başlık */
+h1, h2, h3, h4 {
+    color: #f2f2f2 !important;
+    font-weight: 600;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #111317 !important;
+    border-right: 1px solid #1f2228;
+}
+
+/* Input alanları */
+input, select, textarea {
+    background-color: #1a1d23 !important;
+    color: #e6e6e6 !important;
+    border: 1px solid #2a2d33 !important;
+    border-radius: 6px !important;
+}
+
+/* Metric kartları */
+[data-testid="stMetricValue"] {
+    color: #00eaff !important;
+    font-size: 26px !important;
+    font-weight: 700 !important;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 16px !important;
+}
+
+/* Plotly grafikleri */
+.js-plotly-plot .plotly .main-svg {
+    background-color: #0d0f12 !important;
+}
+
+/* Bölücü çizgiler */
+hr {
+    border: 1px solid #1f2228 !important;
+}
+
+/* Kart görünümü */
+.block-container {
+    padding-top: 2rem;
+}
+
+</style>
+"""
+
+import streamlit as st
+st.markdown(custom_css, unsafe_allow_html=True)
+
+
+# -----------------------------
 # SAYFA AYARLARI
 # -----------------------------
 st.set_page_config(
@@ -12,7 +78,9 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📈 ProInvestor Lite – Hisse Analiz Terminali")
+st.markdown("<h1 style='text-align:center; color:#00eaff;'>PROINVESTOR</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#9aa0a6;'>Next‑Gen Stock Analysis Terminal</p>", unsafe_allow_html=True)
+
 
 # -----------------------------
 # YARDIMCI FONKSİYONLAR
